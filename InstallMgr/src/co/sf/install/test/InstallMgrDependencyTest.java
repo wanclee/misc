@@ -98,4 +98,34 @@ public class InstallMgrDependencyTest extends TestCase {
 		assertTrue(dep.isInstalled("NETCARD")); //verify NETCARD is still around
 	}
 	
+	public void testAll() {
+		list.add("DEPEND   TELNET TCPIP NETCARD");
+		list.add("DEPEND TCPIP NETCARD");
+		list.add("DEPEND DNS TCPIP NETCARD");
+		list.add("DEPEND  BROWSER   TCPIP  HTML");
+		list.add("INSTALL NETCARD");
+		list.add("INSTALL TELNET");
+		list.add("INSTALL foo");
+		list.add("REMOVE NETCARD");
+		list.add("INSTALL BROWSER");
+		list.add("INSTALL DNS");
+		list.add("LIST");
+		list.add("REMOVE TELNET");
+		list.add("REMOVE NETCARD");
+		list.add("REMOVE DNS");
+		list.add("REMOVE NETCARD");
+		list.add("INSTALL NETCARD");
+		list.add("REMOVE TCPIP");
+		list.add("REMOVE BROWSER");
+		list.add("REMOVE TCPIP");
+		list.add("LIST");
+		dep.ProcessCmds(list);
+		String[] comps = dep.getInstalledComponents();
+		assertTrue(comps != null);
+		assertEquals(2, comps.length);
+		assertTrue(dep.isInstalled("NETCARD"));
+		assertTrue(dep.isInstalled("foo"));
+		
+	}
+	
 }
