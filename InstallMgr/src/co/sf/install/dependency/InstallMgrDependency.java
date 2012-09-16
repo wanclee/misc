@@ -22,18 +22,6 @@ import co.sf.install.util.InstallMgrUtil;
  * @author wan
  *
  */
-/**
- * @author wan
- *
- */
-/**
- * @author wan
- *
- */
-/**
- * @author wan
- *
- */
 public class InstallMgrDependency {
 
 	//Storing the dependency of components; the key is the component that depends on the list of other componeents
