@@ -1,0 +1,74 @@
+Wans-MacBook-Air:~ wan$ irb
+1.8.7-p358 :001 > def init
+1.8.7-p358 :002?>     @grid = Array.new(10) {Array.new(10) {false}}
+1.8.7-p358 :003?>     #patrol boat - 2 cells; assumed ships belong to one player for now
+1.8.7-p358 :004 >       @patrol = [[0,0], [0,1]]
+1.8.7-p358 :005?>     #submarine - 3 cells
+1.8.7-p358 :006 >       @submarine = [[1,0], [1,1], [1,2]]
+1.8.7-p358 :007?>     
+1.8.7-p358 :008 >     end
+ => nil 
+1.8.7-p358 :009 > 
+1.8.7-p358 :010 >   def shoot(x, y)
+1.8.7-p358 :011?>     loc = Array.new
+1.8.7-p358 :012?>     loc << x << y
+1.8.7-p358 :013?>     ship = nil
+1.8.7-p358 :014?>     name = ""
+1.8.7-p358 :015?>     if @patrol.include?(loc) #if true, there is a hit on patrol boat
+1.8.7-p358 :016?>         ship = @patrol
+1.8.7-p358 :017?>         name = "partrol boat"
+1.8.7-p358 :018?>       end
+1.8.7-p358 :019?>       
+1.8.7-p358 :020 >       if (ship == nil and @submarine.include?(loc)) #if true, there is a hit on the submarine
+1.8.7-p358 :021?>         ship = @submarine
+1.8.7-p358 :022?>         name = "submarine"
+1.8.7-p358 :023?>       end
+1.8.7-p358 :024?>     
+1.8.7-p358 :025 >       if ship == nil 
+1.8.7-p358 :026?>         puts "missed!"
+1.8.7-p358 :027?>         return
+1.8.7-p358 :028?>       end 
+1.8.7-p358 :029?>     
+1.8.7-p358 :030 >       #there is a hit at this point, verify if the hit result in sinking the ship
+1.8.7-p358 :031 >       row = @grid[x][y] = true #a hit; update the cell with true status
+1.8.7-p358 :032?>     sunk = true
+1.8.7-p358 :033?>     ship.each do |box|
+1.8.7-p358 :034 >           # puts "#{box.to_s}: #{@grid[box[0]][box[1]]}"
+1.8.7-p358 :035 >           sunk &= @grid[box[0]][box[1]]
+1.8.7-p358 :036?>       end
+1.8.7-p358 :037?>     if sunk
+1.8.7-p358 :038?>         puts "#{name} sunk!"
+1.8.7-p358 :039?>       else
+1.8.7-p358 :040 >           puts "hit!"
+1.8.7-p358 :041?>       end
+1.8.7-p358 :042?>   end
+ => nil 
+1.8.7-p358 :043 > init
+ => [[1, 0], [1, 1], [1, 2]] 
+1.8.7-p358 :044 > @patrol
+ => [[0, 0], [0, 1]] 
+1.8.7-p358 :045 > @submarine
+ => [[1, 0], [1, 1], [1, 2]] 
+1.8.7-p358 :046 > shoot(9,9)
+missed!
+ => nil 
+1.8.7-p358 :047 > shoot(5,5)
+missed!
+ => nil 
+1.8.7-p358 :048 > shoot(0,1)
+hit!
+ => nil 
+1.8.7-p358 :049 > shoot(0,0)
+partrol boat sunk!
+ => nil 
+1.8.7-p358 :050 > shoot(1,0)
+hit!
+ => nil 
+1.8.7-p358 :051 > shoot(1,2)
+hit!
+ => nil 
+1.8.7-p358 :052 > shoot(1,1)
+submarine sunk!
+ => nil 
+1.8.7-p358 :053 > shoot(9,9)
+
