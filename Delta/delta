@@ -1,7 +1,8 @@
 #!/usr/bin/env ruby
 #
 # Compare the base snapshot against the current output from `ps -ef` and return the differences.
-# The differences are the additional new processes that have been started since the last snapshot of `ps -ef`.
+# The differences are the additional new processes that have been started since the last 
+# snapshot of `ps -ef`.
 #
 # If no input snapshot file is specified in the command line, default '~/snapshoot' is assumed.
 # Exit with 1 if file does not exist.
@@ -9,12 +10,36 @@
 # Tips on using this program:
 #   - chmod a+x to make this Ruby script file executable
 #   - place the script file in /usr/local/bin or any directory covered by your environmental PATH
+#   - 
 #   - create your snapshot file on the command line: ps -ef > yourFile
 #   - launch some applications and run the program: delta yourFile
 #   - see the output from the execution -- should show the new processes since the last snapshot
+#   - 
+#   - or simply generate a default 'snapshoot' file in home directory: ps -ef > ~/snapshoot and 
+#     run the program without argument
 #
-# author: Wan Lee
-# email: wan5332@gmail.com
+# Copyright (C) 2015, Wan Lee, wan5332@gmail.com
+#
+# Permission is hereby granted, free of charge, to any person
+# obtaining a copy of this software and associated documentation
+# files (the "Software"), to deal in the Software without
+# restriction, including without limitation the rights to use,
+# copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following
+# conditions:
+# 
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+# OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+# HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+# WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+# OTHER DEALINGS IN THE SOFTWARE.
 #
 
 file = '~/snapshoot' # default
@@ -30,22 +55,23 @@ puts "Base snapshot file used: '#{file}'"
 
 procs_orig = File.read(file).split("\n")
 
-def cleanse(str, colIndex)
+def cleanse(str, colIndexArr)
   return '' unless str.is_a? String
   arr = str.split(' ')
-  return '' unless arr && arr.size > 0 && colIndex < arr.size 
-  arr.delete_at(colIndex) 
+  return '' unless arr && arr.size > 0
+  colIndexArr.sort! { |x, y| y <=> x } # sort in descending order
+  colIndexArr.each { |colIndex|  arr.delete_at(colIndex) if colIndex < arr.size }
   arr.join(' ')
 end
 
 cmds_orig = procs_orig.inject([]) do |arr, k|
-  arr << cleanse(k, 6) # Skip TIME column as it will mess up string comparison
+  arr << cleanse(k, [4,6]) # Skip STIME and TIME columns as they will mess up string comparison
   arr
 end
 
 procs = `ps -ef`.split("\n")
 delta = procs.inject([]) do |arr, p|
-  s = cleanse(p, 6)# Skip Time column
+  s = cleanse(p, [4,6]) # Skip STIME and Time columns
   arr << p unless cmds_orig.include? s
   arr.pop if s =~ /ps -ef|ruby(.*)delta/ # reduce the noise
   arr
